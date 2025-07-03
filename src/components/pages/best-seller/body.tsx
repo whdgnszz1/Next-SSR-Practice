@@ -1,20 +1,14 @@
 'use client'
 
+import { useItemNavigation } from '@/hooks'
 import { IBestSeller, useGetBestSellers } from '@/services/best-seller'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import React from 'react'
 
-export const BestSellerBody: React.FC = () => {
-  const router = useRouter()
-
+export const BestSellerBody = () => {
+  const { navigateToBook } = useItemNavigation()
   const { data } = useGetBestSellers()
 
   const items: IBestSeller[] = data?.pages.flatMap((page) => page.data) || []
-
-  const handleItemClick = (id: string) => {
-    router.push(`/book/${id}`)
-  }
 
   return (
     <div>
@@ -23,7 +17,7 @@ export const BestSellerBody: React.FC = () => {
           <div
             key={item.id}
             className='cursor-pointer'
-            onClick={() => handleItemClick(item.id)}
+            onClick={() => navigateToBook(item.id)}
           >
             <Image
               priority

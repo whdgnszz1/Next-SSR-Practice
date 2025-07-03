@@ -1,59 +1,30 @@
 'use client'
 
-import {
-  ILoginRequestDto,
-  ISignupRequestDto,
-  useAuthMutation
-} from '@/services/auth'
-import { useLoadingStore } from '@/stores/loading'
-import React, { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useAuthForm, useAuthHandlers } from '@/services/auth'
+import React from 'react'
 
 import { LoginForm } from './LoginForm'
 import { SignUpForm } from './SignUpForm'
-import { LoginPageHeader } from './header'
 import { LoginPageFooter } from './footer'
+import { LoginPageHeader } from './header'
 
-export const SignUpLoginPage: React.FC = () => {
-  const router = useRouter()
-  const [tab, setTab] = useState<'login' | 'signup'>('login')
-  const [loginValues, setLoginValues] = useState<ILoginRequestDto>({
-    email: '',
-    password: ''
+export const SignUpLoginPage = () => {
+  const {
+    tab,
+    loginValues,
+    signUpValues,
+    setTab,
+    setLoginValues,
+    setSignUpValues,
+    handleTabChange,
+    handleInputChange
+  } = useAuthForm()
+
+  const { handleSignUp, handleLogin } = useAuthHandlers({
+    loginValues,
+    signUpValues,
+    onSignUpSuccess: () => setTab('login')
   })
-  const [signUpValues, setSignUpValues] = useState<ISignupRequestDto>({
-    email: '',
-    password: '',
-    name: ''
-  })
-  const { setLoading } = useLoadingStore()
-  const { signupMutate, loginMutate } = useAuthMutation()
-
-  const handleTabChange = useCallback((selectedTab: 'login' | 'signup') => {
-    setTab(selectedTab)
-  }, [])
-
-  const handleInputChange =
-    (setter: React.Dispatch<React.SetStateAction<any>>) =>
-    (field: string, value: string) => {
-      setter((prev: any) => ({ ...prev, [field]: value }))
-    }
-
-  const handleSignUp = () => {
-    setLoading(true)
-    signupMutate.mutate(signUpValues, {
-      onSuccess: () => setTab('login'),
-      onSettled: () => setLoading(false)
-    })
-  }
-
-  const handleLogin = () => {
-    setLoading(true)
-    loginMutate.mutate(loginValues, {
-      onSuccess: () => router.push('/main'),
-      onSettled: () => setLoading(false)
-    })
-  }
 
   return (
     <div className='flex min-h-screen items-center justify-center p-4'>

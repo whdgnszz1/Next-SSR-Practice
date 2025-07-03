@@ -1,14 +1,15 @@
 'use client'
 
 import { IBook } from '@/services/book'
+import { useItemNavigation } from '@/hooks'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import React from 'react'
 
 export const SearchResultList = ({ item }: { item: IBook }) => {
-  const router = useRouter()
+  const { navigateToBook } = useItemNavigation()
+
   const handleItemClick = () => {
-    router.push(`/book/${item.id}`)
+    navigateToBook(item.id)
   }
 
   return (

@@ -2,9 +2,8 @@
 
 import { useBookModal } from '@/components/book'
 import { Button, ButtonColor, ButtonSize } from '@/shared/components'
-import React from 'react'
 
-export const MainHeader: React.FC = () => {
+export const MainHeader = () => {
   const { registerBookModalOpen } = useBookModal()
 
   return (

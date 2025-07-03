@@ -1,10 +1,6 @@
-import React from 'react'
-import { MainPageHeaderProps } from './interface'
+import { IMainPageHeaderProps } from './interface'
 
-export const LoginPageHeader: React.FC<MainPageHeaderProps> = ({
-  tab,
-  onTabChange
-}) => {
+export const LoginPageHeader = ({ tab, onTabChange }: IMainPageHeaderProps) => {
   return (
     <>
       <h2 className='text-2xl font-bold'>Next-SSR-Practice</h2>

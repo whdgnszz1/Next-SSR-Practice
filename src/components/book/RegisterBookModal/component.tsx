@@ -1,84 +1,24 @@
 'use client'
 
-import { useGetBestSellers } from '@/services/best-seller'
+import { useBookForm, useBookSubmit } from '@/services/book'
 import { Button, FormField } from '@/shared/components'
-import { useLoadingStore } from '@/stores/loading'
-import { useToast } from '@/stores/toast'
-import { uploadImage } from '@/util/image/uploadImage'
-import React, { useState } from 'react'
 
-interface BookData {
-  image: string | null
-  title: string
-  author: string
-  pbcmName: string
-  description: string
-}
-
-interface RegisterBookModalProps {
+interface IRegisterBookModalProps {
   onClose: () => void
 }
 
-export const RegisterBookModal: React.FC<RegisterBookModalProps> = ({
+export const RegisterBookModal = ({
   onClose
-}) => {
-  const { setLoading } = useLoadingStore()
-  const { toastOne } = useToast()
-
-  const { refetch } = useGetBestSellers()
-  const [bookData, setBookData] = useState<BookData>({
-    image: null,
-    title: '',
-    author: '',
-    pbcmName: '',
-    description: ''
+}: IRegisterBookModalProps) => {
+  const { bookData, imageFile, handleChange, resetForm } = useBookForm()
+  const { handleSubmit } = useBookSubmit({
+    bookData,
+    imageFile,
+    onSuccess: () => {
+      resetForm()
+      onClose()
+    }
   })
-  const [imageFile, setImageFile] = useState<File | null>(null)
-
-  const handleChange = (field: keyof BookData, value: string | File | null) => {
-    if (field === 'image') {
-      setImageFile(value as File)
-    } else {
-      setBookData((prev) => ({
-        ...prev,
-        [field]: value as string
-      }))
-    }
-  }
-
-  const handleSubmit = async () => {
-    setLoading(true)
-    try {
-      let imageUrl: string | null = ''
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile)
-      }
-
-      const response = await fetch('/api/book', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...bookData,
-          image: imageUrl || ''
-        })
-      })
-
-      if (response.ok) {
-        toastOne('책이 성공적으로 등록되었습니다.')
-        refetch()
-        onClose()
-      } else {
-        throw new Error('서버 오류')
-      }
-    } catch (error) {
-      console.error('책 등록 실패:', error)
-      alert('책 등록에 실패했습니다.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <div className='mt-4 space-y-4'>

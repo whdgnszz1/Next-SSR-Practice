@@ -8,16 +8,15 @@ interface IPageProps {
 
 const Page = async ({ searchParams }: IPageProps) => {
   const query = searchParams.query || ''
-  const { queryKey: fetchSearchResultsKey, queryFn: fetchSearchResultsFn } =
-    queryOptions.search()
+
+  // 검색 페이지 관련 초기 쿼리들
+  const initialQueries = [queryOptions.search()]
 
   const queries = await getDehydratedQueries(
-    [
-      {
-        queryKey: [fetchSearchResultsKey, query],
-        queryFn: fetchSearchResultsFn
-      }
-    ],
+    initialQueries.map((q) => ({
+      queryKey: [q.queryKey, query],
+      queryFn: q.queryFn
+    })),
     true
   )
 

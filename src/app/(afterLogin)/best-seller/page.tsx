@@ -1,13 +1,17 @@
 import { BestSellerPage } from '@/components/pages/best-seller'
-import { queryOptions } from '@/services/best-seller'
+import { queryOptions as bestSellerQueryOptions } from '@/services/best-seller'
 import { Hydrate, getDehydratedQueries } from '@/util/api/react-query'
 
 const Page = async () => {
-  const { queryKey: fetchBestSellersKey, queryFn: fetchBestSellersFn } =
-    queryOptions.bestsellers()
+  // 베스트셀러 관련 초기 쿼리들
+  const initialQueries = [bestSellerQueryOptions.bestsellers()]
 
   const queries = await getDehydratedQueries(
-    [{ queryKey: fetchBestSellersKey, queryFn: fetchBestSellersFn }],
+    initialQueries.map((q) => ({ 
+      queryKey: q.queryKey, 
+      queryFn: q.queryFn,
+      getNextPageParam: q.getNextPageParam
+    })),
     true
   )
 

@@ -11,68 +11,45 @@ export async function GET(request: NextRequest) {
     const per = 3
     const offset = (page - 1) * per
 
-    let queries: any[] = []
     let searchResults: any[] = []
 
     if (q) {
-      const titleQuery = db
+      // 모든 문서를 가져와서 클라이언트에서 필터링
+      // 운영 환경에서는 Algolia나 Elasticsearch 사용 권장
+      const allBooksQuery = db
         .collection('book')
-        .where('title', '>=', q)
-        .where('title', '<=', q + '\uf8ff')
-        .orderBy('createdAt')
-        .offset(offset)
-        .limit(per)
+        .orderBy('createdAt', 'desc')
+        .limit(100) // 성능을 위해 제한
 
-      queries.push(titleQuery)
+      const snapshot = await allBooksQuery.get()
+      
+      const allBooks = snapshot.docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
 
-      const authorQuery = db
-        .collection('book')
-        .where('author', '>=', q)
-        .where('author', '<=', q + '\uf8ff')
-        .orderBy('createdAt')
-        .offset(offset)
-        .limit(per)
-
-      queries.push(authorQuery)
-
-      const pbcmNameQuery = db
-        .collection('book')
-        .where('pbcmName', '>=', q)
-        .where('pbcmName', '<=', q + '\uf8ff')
-        .orderBy('createdAt')
-        .offset(offset)
-        .limit(per)
-
-      queries.push(pbcmNameQuery)
-
-      const descriptionQuery = db
-        .collection('book')
-        .where('description', '>=', q)
-        .where('description', '<=', q + '\uf8ff')
-        .orderBy('createdAt')
-        .offset(offset)
-        .limit(per)
-
-      queries.push(descriptionQuery)
-
-      const snapshots = await Promise.all(queries.map((query) => query.get()))
-
-      snapshots.forEach((snapshot) => {
-        snapshot.docs.forEach((doc: any) => {
-          if (!searchResults.find((item) => item.id === doc.id)) {
-            searchResults.push({ id: doc.id, ...doc.data() })
-          }
-        })
+      // 클라이언트 사이드에서 검색 필터링
+      const filteredBooks = allBooks.filter((book: any) => {
+        const searchTerm = q.toLowerCase()
+        return (
+          book.title?.toLowerCase().includes(searchTerm) ||
+          book.author?.toLowerCase().includes(searchTerm) ||
+          book.pbcmName?.toLowerCase().includes(searchTerm) ||
+          book.description?.toLowerCase().includes(searchTerm)
+        )
       })
+
+      // 페이지네이션 적용
+      const startIndex = offset
+      const endIndex = startIndex + per
+      searchResults = filteredBooks.slice(startIndex, endIndex)
     }
 
-    const paginatedResults = searchResults.slice(0, per)
-
-    const nextCursor = paginatedResults.length === per ? page + 1 : undefined
+    const nextCursor = searchResults.length === per ? page + 1 : undefined
 
     return NextResponse.json(
       {
-        data: paginatedResults,
+        data: searchResults,
         nextCursor
       },
       { status: 200 }

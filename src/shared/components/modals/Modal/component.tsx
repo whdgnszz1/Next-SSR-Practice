@@ -7,7 +7,13 @@ import { parseModalStyles } from './styles'
 /**
  *  모달 Wrapper
  */
-export const Modal = ({ layout, size, ...props }: IModalProps) => {
+export const Modal = ({ 
+  layout, 
+  size, 
+  escapeToClose = true,
+  clickOutsideToClose = true,
+  ...props 
+}: IModalProps) => {
   const [overay, dialog] = parseModalStyles({ layout, size })
 
   return (
@@ -15,6 +21,8 @@ export const Modal = ({ layout, size, ...props }: IModalProps) => {
       layout={layout}
       overlayStyle={overay}
       dialogStyle={dialog}
+      escapeToClose={escapeToClose}
+      clickOutsideToClose={clickOutsideToClose}
       {...props}
     />
   )

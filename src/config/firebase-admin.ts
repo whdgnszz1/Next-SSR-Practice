@@ -1,19 +1,17 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore } from 'firebase-admin/firestore'
+import path from 'path'
 
 if (!getApps().length) {
+  // JSON 파일을 직접 사용하는 방법 (더 안전함)
+  const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json')
+  
   initializeApp({
-    credential: cert({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      clientEmail: process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY!.replace(
-        /\\n/g,
-        '\n'
-      )
-    })
+    credential: cert(serviceAccountPath)
   })
 }
+
 const adminAuth = getAuth()
 const db = getFirestore()
 

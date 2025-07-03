@@ -14,6 +14,8 @@ export const useRegisterBookModal = () => {
         size: ModalSize.MEDIUM,
         title: '책 등록하기',
         close: true,
+        escapeToClose: true,
+        clickOutsideToClose: true,
         children: <RegisterBookModal {...props} onClose={closeAllModals} />,
         onClose: closeAllModals
       }

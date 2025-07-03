@@ -1,32 +1,17 @@
 'use client'
 
+import { useInfiniteScroll, useItemNavigation } from '@/hooks'
 import { IBestSeller } from '@/services/best-seller'
 import { useGetBooks } from '@/services/book'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
-import { useInView } from 'react-intersection-observer'
 
-export const MainBody: React.FC = () => {
-  const { ref, inView } = useInView({
-    rootMargin: '20px'
-  })
-  const router = useRouter()
+export const MainBody = () => {
+  const booksQuery = useGetBooks()
+  const { navigateToBook } = useItemNavigation()
+  const { ref } = useInfiniteScroll({ query: booksQuery })
 
-  const { data, fetchNextPage, hasNextPage } = useGetBooks()
-
-  const items: IBestSeller[] = data?.pages.flatMap((page) => page.data) || []
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, hasNextPage])
-
-  const handleItemClick = (id: string) => {
-    router.push(`/book/${id}`)
-  }
+  const items: IBestSeller[] =
+    booksQuery.data?.pages.flatMap((page) => page.data) || []
 
   return (
     <div>
@@ -35,7 +20,7 @@ export const MainBody: React.FC = () => {
           <div
             key={item.id}
             className='cursor-pointer'
-            onClick={() => handleItemClick(item.id)}
+            onClick={() => navigateToBook(item.id)}
           >
             <Image
               priority

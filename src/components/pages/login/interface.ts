@@ -1,6 +1,6 @@
 import { ILoginRequestDto, ISignupRequestDto } from '@/services/auth'
 
-export interface MainPageHeaderProps {
+export interface IMainPageHeaderProps {
   tab: 'login' | 'signup'
   onTabChange: (selectedTab: 'login' | 'signup') => void
 }

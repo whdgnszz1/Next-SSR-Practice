@@ -1,13 +1,20 @@
 'use client'
 
-import { IBook } from '@/services/book'
+import { useQuery } from '@tanstack/react-query'
+import { queryOptions } from '@/services/book'
 import Image from 'next/image'
 
 interface IBookPageProps {
-  book: IBook
+  bookId: string
 }
 
-export const BookPage = ({ book }: IBookPageProps) => {
+export const BookPage = ({ bookId }: IBookPageProps) => {
+  const { data: book } = useQuery(queryOptions.book(bookId))
+
+  if (!book) {
+    return <div>로딩중...</div>
+  }
+
   return (
     <div className='flex w-full flex-col'>
       <div className='mx-auto flex w-[944px] flex-col items-center'>

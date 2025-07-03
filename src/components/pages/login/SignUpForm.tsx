@@ -1,11 +1,11 @@
 import { Button, FormField } from '@/shared/components'
 import { ISignUpFormProps } from './interface'
 
-export const SignUpForm: React.FC<ISignUpFormProps> = ({
+export const SignUpForm = ({
   onChange,
   onSubmit,
   values
-}) => {
+}: ISignUpFormProps) => {
   return (
     <form
       onSubmit={(e) => {

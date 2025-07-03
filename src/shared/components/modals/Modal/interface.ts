@@ -27,6 +27,10 @@ export interface IModalProps extends ICloseHandleProps {
   overlayStyle?: string
   /** 다이얼로그(박스) 스타일 */
   dialogStyle?: string
+  /** ESC 키로 닫기 활성화 여부 */
+  escapeToClose?: boolean
+  /** 외부 클릭으로 닫기 활성화 여부 */
+  clickOutsideToClose?: boolean
   children?: React.ReactNode
   className?: string
 }

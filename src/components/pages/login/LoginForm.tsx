@@ -1,11 +1,7 @@
 import { Button, FormField } from '@/shared/components'
 import { ILoginFormProps } from './interface'
 
-export const LoginForm: React.FC<ILoginFormProps> = ({
-  onChange,
-  onSubmit,
-  values
-}) => {
+export const LoginForm = ({ onChange, onSubmit, values }: ILoginFormProps) => {
   return (
     <form
       onSubmit={(e) => {
